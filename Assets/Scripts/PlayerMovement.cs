@@ -190,6 +190,9 @@ public class PlayerMovement : MonoBehaviour
             }
         }
     }
+    
+        
+    
     public void DiedState()
     {
         if(isDeath)
@@ -279,12 +282,11 @@ public class PlayerMovement : MonoBehaviour
     }
     void OnTriggerEnter2D(Collider2D other)
     {
-        if(other.gameObject.tag == "Ladder" )
+        if(myBodyCollider.IsTouchingLayers(LayerMask.GetMask("Hazard")))
         {
-            myAnimator.SetBool("IsJumpingUp",false);
-            myAnimator.SetBool("IsJumpingFall",true);
-            
+            currentHealth = 0;
         }
+      
         
     }
 void RunReverse()
