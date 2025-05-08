@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor.Tilemaps;
 using UnityEngine;
 
 public class EnemyController : MonoBehaviour
@@ -17,7 +18,9 @@ public class EnemyController : MonoBehaviour
     [SerializeField] float moveSpeed = 2f;
     [SerializeField] float patrolRange = 3f;
 
-    private Vector3 startPoint;
+    private Vector2 startPoint;
+    [SerializeField] private float leftBound;
+    [SerializeField] private float rightBound;
     private bool movingRight = true;
 
     [SerializeField] float waitTimeAtEdge = 1f;
@@ -26,6 +29,8 @@ public class EnemyController : MonoBehaviour
     [Header("Follow Player")]
     public Transform player;
     public float followDistance = 5f;
+    public float followSpeed = 5f;
+    private bool isReturningToPatrol = false;
 
     [Header("Attack")]
     public float attackDistance = 1.5f;
@@ -47,7 +52,7 @@ public class EnemyController : MonoBehaviour
     [SerializeField] SpriteRenderer spriteRenderer;
     [SerializeField] Rigidbody2D rb2d;
     Quiz activeQuiz;
-    void Start()
+    void Awake()
     {
         isAlive = true;
         activeQuiz = FindObjectOfType<Quiz>();
@@ -58,6 +63,8 @@ public class EnemyController : MonoBehaviour
         Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Enemy"), LayerMask.NameToLayer("Enemy"), true);
         currentHealth = maxHealth;
         startPoint = transform.position;
+        leftBound = startPoint.x - patrolRange;
+        rightBound = startPoint.x + patrolRange;
         SetupQuiz();
         animator = GetComponent<Animator>();
 
@@ -69,25 +76,34 @@ public class EnemyController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
-        if(distanceToPlayer <= followDistance && isAlive == true)
-        {
-            followPlayer();
-        }
-         if(distanceToPlayer <= attackDistance && isAlive == true)
-        {
-            AttackPlayer();
-        }
         
-         else 
-        {
-            Patrol();
-        }
+    if (!isAlive) return;
+
+    float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+
+    if (isReturningToPatrol)
+    {
+        ReturnToPatrol();
+    }
+    else if (distanceToPlayer <= attackDistance)
+    {
+        AttackPlayer();
+    }
+    else if (distanceToPlayer <= followDistance)
+    {
+        // isReturningToPatrol = false;
+        followPlayer();
+    }
+    else
+    {
+        Patrol();
+    }    }
+    
        
         
         
         
-    }
+    
     void SetupQuiz()
     {
         if(quiz != null)
@@ -130,91 +146,111 @@ public class EnemyController : MonoBehaviour
             }
         }
     }
-    void Patrol()
-    {
-        if(isAlive == false)
+   void Patrol()
+{
+    if(!isAlive)
         {
+            rb2d.velocity = Vector2.zero; // Dừng lại ngay lập tức
             return;
         }
-        float leftBound = startPoint.x - patrolRange;
-        float rightBound = startPoint.x + patrolRange;
-        if(waitTimer > 0)
-        {
-            waitTimer -= Time.deltaTime;
-            animator.SetBool("IsWalking", false);
-            return;
-        }
-
-        float direction = movingRight ? 1 : -1;
-
-        transform.Translate(Vector2.right * direction * moveSpeed * Time.deltaTime);
-        animator.SetBool("IsWalking", true);
-
-        if (transform.position.x > rightBound && movingRight)
-        {
-            waitTimer = waitTimeAtEdge;
-            movingRight = false;
-        }
-        else if (transform.position.x < leftBound && !movingRight)
-        {
-            waitTimer = waitTimeAtEdge;
-            movingRight = true;
-        }
-        else if (transform.position.x > rightBound && !movingRight)
-        {
-            waitTimer = waitTimeAtEdge;
-            movingRight = false;
-        }
-        else if (transform.position.x < leftBound)
-        {
-            waitTimer = waitTimeAtEdge;
-            movingRight = true;
-        }
-        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-        if(spriteRenderer != null )
-        {
-            if(waitTimer <= 0)
-            {
-                if(movingRight)
-                {
-                    transform.rotation = Quaternion.Euler(0, 0, 0);
-                }
-                else
-                {
-                    transform.rotation = Quaternion.Euler(0, 180, 0);
-                }
-            }
-        }
-
-    }
-   void followPlayer()
-   {
-    if(isAlive == false)
+    // Kiểm tra nếu đang trong thời gian chờ
+    if(waitTimer > 0)
     {
-         return;
+        
+        // Đang trong thời gian chờ - dừng di chuyển
+        waitTimer -= Time.deltaTime;
+        rb2d.velocity = Vector2.zero;
+        animator.SetBool("IsWalking", false);
+        
+        // Nếu thời gian chờ kết thúc, thực hiện quay đầu
+        if(waitTimer <= 0)
+        {
+            // Sau khi kết thúc thời gian chờ, đổi hướng
+            movingRight = !movingRight;
+            transform.rotation = movingRight ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
+            animator.SetBool("IsWalking", true);
+        }
+        return;
     }
-    Vector2 direction = (player.position - transform.position).normalized;
-    Vector2 stopPosition = (Vector2)player.position - direction * StopFollowDistance;
-    transform.position = Vector2.MoveTowards(transform.position, stopPosition, moveSpeed * Time.deltaTime);
+    
+    // Thực hiện di chuyển bình thường
+    float direction = movingRight ? 1 : -1;
+    rb2d.velocity = new Vector2(direction * moveSpeed, rb2d.velocity.y);
     animator.SetBool("IsWalking", true);
-    transform.rotation = Quaternion.Euler(0, player.position.x < transform.position.x ? 180 : 0, 0);
-   }
-   public void AttackPlayer()
-   {
-    if(isAlive == false)
+    
+    // Kiểm tra nếu đến biên
+    if((transform.position.x > rightBound && movingRight) || 
+       (transform.position.x < leftBound && !movingRight))
     {
-         return;
+        // Đến biên - bắt đầu thời gian chờ
+        waitTimer = waitTimeAtEdge;
+        rb2d.velocity = Vector2.zero; // Dừng lại ngay lập tức
+        animator.SetBool("IsWalking", false);
+        
     }
-    animator.SetBool("IsWalking", false);
-    spriteRenderer.flipX = (player.position.x < transform.position.x);
-    if(Time.time - attackTimer >= attackCooldown)
+}
+    
+   void followPlayer()
+{
+    if (!isAlive) return;
+
+    float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+
+    // Nếu player rời khỏi vùng follow → quay về patrol
+    if (distanceToPlayer > followDistance)
+    {
+        isReturningToPatrol = true;
+        Debug.Log("Return to patrol!");
+        return;
+    }
+
+    // Theo dõi player
+    Vector2 direction = (player.position - transform.position).normalized;
+    rb2d.velocity = new Vector2(direction.x * followSpeed, rb2d.velocity.y); 
+    Debug.Log("Follow Player!");
+    animator.SetBool("IsWalking", true);
+    transform.rotation = direction.x > 0 ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
+}
+void ReturnToPatrol()
+{
+    if (!isAlive) return;
+    float distanceToStart = Vector2.Distance(transform.position, startPoint);
+
+    if (distanceToStart > 0.1f)
+    {
+        Vector2 dir = (startPoint - (Vector2)transform.position).normalized;
+        rb2d.velocity = new Vector2(dir.x * moveSpeed, rb2d.velocity.y);
+        transform.rotation = dir.x > 0 ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
+        animator.SetBool("IsWalking", true);
+    }
+    else
+    {
+        // Khi đã về gần vị trí ban đầu → reset patrol
+        isReturningToPatrol = false;
+        transform.position = new Vector3(startPoint.x, transform.position.y, transform.position.z); // đảm bảo khớp chính xác
+        movingRight = true;
+        waitTimer = waitTimeAtEdge;
+        rb2d.velocity = Vector2.zero;
+    }
+}
+    
+
+
+
+void AttackPlayer()
+{
+    if (!isAlive) return;
+    // Kiểm tra cooldown tấn công
+    if (Time.time - attackTimer >= attackCooldown)
     {
         attackTimer = Time.time;
         animator.SetTrigger("Attack");
         Debug.Log("Attack Player!");
-        StartCoroutine(PerformAttackDamage(0.5f)); // Thay đổi thời gian delay nếu cần
+        
+        // Gọi coroutine thực hiện sát thương sau một khoảng thời gian delay
+        StartCoroutine(PerformAttackDamage(0.5f));
     }
-   }
+}
 public void DamagePlayer(PlayerMovement playerMovement)
 {
     playerMovement.currentHealth -= attackDamage;

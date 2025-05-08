@@ -95,6 +95,7 @@ public class PlayerMovement : MonoBehaviour
     void OnFire(InputValue value)
     {
         if(!isFree) {return;}
+        if(isDeath) {return;}
         if(Time.time >= nextAttackTime){
             bool canFire = weaponController.Fire();
         if (canFire)
@@ -141,6 +142,8 @@ public class PlayerMovement : MonoBehaviour
     
     void OnJump(InputValue value )
     {
+        if(!isFree) {return;}
+        if(isDeath) {return;}
         if(!myBodyCollider.IsTouchingLayers(LayerMask.GetMask("Ground"))){return;}
         if(Time.time >= nextJumpTime){
         if(value.isPressed )
@@ -255,7 +258,6 @@ public class PlayerMovement : MonoBehaviour
         myRigidbody.gravityScale = 0f;
         
         bool playerHasVerticalSpeed = Mathf.Abs(myRigidbody.velocity.y) > Mathf.Epsilon; 
-        bool justJumpedOntoLadder = !playerHasVerticalSpeed && Input.GetButtonDown("Jump");
         if(playerHasVerticalSpeed)
         {
             myAnimator.SetBool("IsJumpingUp",false);
