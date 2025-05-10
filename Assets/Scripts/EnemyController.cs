@@ -42,7 +42,7 @@ public class EnemyController : MonoBehaviour
     [SerializeField] Transform attackPoint;
     [SerializeField] float attackRange = 0.5f;
     [SerializeField] LayerMask playerLayer;
-    [SerializeField] float attackRate = 1f;
+    // [SerializeField] float attackRate = 1f;
     [SerializeField] int attackDamage = 1;
 
 
@@ -100,10 +100,6 @@ public class EnemyController : MonoBehaviour
     }    }
     
        
-        
-        
-        
-    
     void SetupQuiz()
     {
         if(quiz != null)
@@ -113,6 +109,7 @@ public class EnemyController : MonoBehaviour
     }
     public void DamageTake()
     {
+        if (!isAlive) return;
         
         if(activeQuiz != null)
         {
@@ -124,6 +121,7 @@ public class EnemyController : MonoBehaviour
                     Debug.Log("Trung diem yeu!");
                     isAlive = false;
                     animator.SetTrigger("Died");
+                    
                     Destroy(gameObject,2f);
                 
             }
@@ -192,7 +190,11 @@ public class EnemyController : MonoBehaviour
     
    void followPlayer()
 {
-    if (!isAlive) return;
+    if (!isAlive)
+    {
+    rb2d.velocity = Vector2.zero;
+    return;
+    }
 
     float distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
@@ -213,7 +215,11 @@ public class EnemyController : MonoBehaviour
 }
 void ReturnToPatrol()
 {
-    if (!isAlive) return;
+    if (!isAlive)
+    {
+    rb2d.velocity = Vector2.zero;
+    return;
+    }
     float distanceToStart = Vector2.Distance(transform.position, startPoint);
 
     if (distanceToStart > 0.1f)

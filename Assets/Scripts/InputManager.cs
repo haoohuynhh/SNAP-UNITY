@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.SearchService;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
@@ -13,53 +11,75 @@ public class InputManager : MonoBehaviour
     public Button resumeButton;
     public Button settingButton;
     public Button exitButton;
+    public Button applyButton;
 
-    private PlayerInput playerInput;
-    private InputAction pauseAction;
+    // Phím dùng để tạm dừng game (mặc định là Escape)
+    [SerializeField] private KeyCode pauseKey = KeyCode.Escape;
+    
     public bool isPaused = false;
 
-    void Awake()
-    {
-
-        playerInput = GetComponent<PlayerInput>();
-        pauseAction = playerInput.actions["Pause"]; // Tên action trong InputActions
-
-        pauseAction.performed += ctx => OnPauseButtonClicked();
-    }
-
-    void OnEnable()
-    {
-        pauseAction.Enable();
-    }
-
-    void OnDisable()
-    {
-        pauseAction.Disable();
-    }
+    // Không cần Awake, OnEnable, OnDisable nữa vì không sử dụng Input System
 
     void Start()
     {
+        isPaused = false;
 
-        pauseMenu.SetActive(false);
-        settingMenu.SetActive(false);
+        // Đảm bảo menu không hiển thị khi bắt đầu
+        if (pauseMenu != null)
+            pauseMenu.SetActive(false);
+            
+        if (settingMenu != null)
+            settingMenu.SetActive(false);
 
-        resumeButton.onClick.AddListener(ResumeGame);
-        settingButton.onClick.AddListener(OpenSettings);
-        exitButton.onClick.AddListener(ExitGame);
+        // Gán các listener cho các nút
+        if (resumeButton != null)
+            resumeButton.onClick.AddListener(ResumeGame);
+            
+        if (settingButton != null)
+            settingButton.onClick.AddListener(OpenSettings);
+            
+        if (exitButton != null)
+            exitButton.onClick.AddListener(ExitGame);
+            
+        if (applyButton != null)
+            applyButton.onClick.AddListener(ApplySettings);
+    }
+
+    // Thêm phương thức Update để kiểm tra phím
+    void Update()
+    {
+        // Kiểm tra nếu người chơi nhấn phím Escape (hoặc phím được cấu hình)
+        if (Input.GetKeyDown(pauseKey))
+        {
+            OnPauseButtonClicked();
+        }
     }
 
     public void ResumeGame()
     {
+        // Kiểm tra null trước khi truy cập
         Time.timeScale = 1f;
-        pauseMenu.SetActive(false);
-        settingMenu.SetActive(false);
+        
+        if (pauseMenu != null)
+            pauseMenu.SetActive(false);
+            
+        if (settingMenu != null)
+            settingMenu.SetActive(false);
+            
         isPaused = false;
+        Cursor.visible = true;
     }
 
     public void OpenSettings()
     {
-        pauseMenu.SetActive(false);
-        settingMenu.SetActive(true);
+        Cursor.visible = false;
+        
+        if (pauseMenu != null)
+            pauseMenu.SetActive(false);
+            
+        if (settingMenu != null)
+            settingMenu.SetActive(true);
+            
         isPaused = true;
         Time.timeScale = 0f;
         Debug.Log("Open Settings");
@@ -67,23 +87,57 @@ public class InputManager : MonoBehaviour
 
     public void ExitGame()
     {
-        SceneManager.LoadScene("Scene UI"); // Replace "MainMenu" with the name of your main menu scene
+        ResetGame();
+        SceneManager.LoadScene("Scene UI");
         Debug.Log("Exit Game");
     }
 
     public void PauseGame()
     {
         Time.timeScale = 0f;
-        pauseMenu.SetActive(true);
-        settingMenu.SetActive(false);
         
+        if (pauseMenu != null)
+            pauseMenu.SetActive(true);
+            
+        if (settingMenu != null)
+            settingMenu.SetActive(false);
+            
+        Cursor.visible = true;
+        isPaused = true;
     }
 
     public void OnPauseButtonClicked()
     {
+        // Kiểm tra null trước khi truy cập
+        if (pauseMenu == null)
+        {
+            Debug.LogWarning("Pause menu is null!");
+            return;
+        }
+
         if (pauseMenu.activeSelf)
             ResumeGame();
         else
             PauseGame();
+    }
+
+    public void ApplySettings()
+    {
+        if (settingMenu != null)
+            settingMenu.SetActive(false);
+            
+        if (pauseMenu != null)
+            pauseMenu.SetActive(true);
+            
+        Time.timeScale = 0f;
+        Cursor.visible = false;
+        isPaused = true;
+    }
+
+    public void ResetGame()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        Debug.Log("Reset Game");
     }
 }

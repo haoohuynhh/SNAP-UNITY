@@ -13,7 +13,7 @@ public class QuestionSO : ScriptableObject
 
     public int GetCorrectAnswerIndex()
     {
-        return correctAnswerIndex;
+        return Mathf.Clamp(correctAnswerIndex, 0, answers.Length - 1);
     }
     public string GetQuestion()
     {

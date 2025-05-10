@@ -84,6 +84,10 @@ public class WeaponController : MonoBehaviour
     }
     public bool Fire()
     {
+        if (inputManager.isPaused)
+        {
+            return false; // Không thực hiện nếu game đang tạm dừng
+        }
         if(isReloading)
         
             return false;
@@ -105,6 +109,10 @@ public class WeaponController : MonoBehaviour
     }
     public void GunReload()
     {
+        if (inputManager.isPaused)
+        {
+            return; // Không thực hiện nếu game đang tạm dừng
+        }
         if(currentAmmo == maxAmmo || isReloading)
         return;
         StartCoroutine(Reload());
@@ -115,7 +123,6 @@ public class WeaponController : MonoBehaviour
         isReloading = true;
         if(ammoText != null)
         {
-            ammoText.alignment = TextAlignmentOptions.Left;
             ammoText.text = "Reloading";
         }
         Debug.Log("Reloading...");
@@ -126,7 +133,6 @@ public class WeaponController : MonoBehaviour
 
         currentAmmo = maxAmmo;
 
-        ammoText.alignment = TextAlignmentOptions.Right;
         ammoText.text = currentAmmo + "/" + maxAmmo;
         OnAmmoChanged?.Invoke(currentAmmo, maxAmmo);
         isReloading = false;
