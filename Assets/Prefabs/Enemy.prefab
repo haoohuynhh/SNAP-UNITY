@@ -105,7 +105,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 5641762802677383885}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: bc35f4d1e135f9b4494e93d2840e3da4, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -180,7 +180,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -995627663
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_Sprite: {fileID: 1596936022, guid: 3fbead96ecec6024a8883464c1ea2858, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -231,9 +231,12 @@ MonoBehaviour:
   quiz: {fileID: 0}
   moveSpeed: 2
   patrolRange: 3
+  leftBound: 0
+  rightBound: 0
   waitTimeAtEdge: 1
   player: {fileID: 0}
   followDistance: 5
+  followSpeed: 5
   attackDistance: 1.5
   StopFollowDistance: 1.06
   attackCooldown: 1
@@ -244,7 +247,6 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 1
-  attackRate: 1
   attackDamage: 1
   animator: {fileID: 0}
   spriteRenderer: {fileID: 0}

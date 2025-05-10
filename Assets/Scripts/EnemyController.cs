@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
-using UnityEditor.Tilemaps;
+// using UnityEditor.Tilemaps;
 using UnityEngine;
 
 public class EnemyController : MonoBehaviour
@@ -51,11 +51,11 @@ public class EnemyController : MonoBehaviour
     [SerializeField] Animator animator;
     [SerializeField] SpriteRenderer spriteRenderer;
     [SerializeField] Rigidbody2D rb2d;
-    Quiz activeQuiz;
+    
     void Awake()
     {
         isAlive = true;
-        activeQuiz = FindObjectOfType<Quiz>();
+        
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb2d = GetComponent<Rigidbody2D>();
         player = GameObject.FindGameObjectWithTag("Player").transform;
@@ -77,7 +77,13 @@ public class EnemyController : MonoBehaviour
     void FixedUpdate()
     {
         
-    if (!isAlive) return;
+    if (!isAlive)
+    {
+        rb2d.velocity = Vector2.zero; // Dừng lại ngay lập tức
+       
+        return;
+     
+    }
 
     float distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
@@ -111,10 +117,10 @@ public class EnemyController : MonoBehaviour
     {
         if (!isAlive) return;
         
-        if(activeQuiz != null)
+        if(quiz != null)
         {
-            int selectedIndex = activeQuiz.CurrentSelectedIndex;
-            int correctIndex = activeQuiz.CurrentQuestion.GetCorrectAnswerIndex();
+            int selectedIndex = quiz.CurrentSelectedIndex;
+            int correctIndex = quiz.CurrentQuestion.GetCorrectAnswerIndex();
             if(selectedIndex == correctIndex)
             {
                 

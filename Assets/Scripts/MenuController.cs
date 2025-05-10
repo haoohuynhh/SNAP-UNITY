@@ -24,7 +24,6 @@ public class MenuController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Cursor.visible = false;
 
         startButton.gameObject.SetActive(true);
         exitButton.gameObject.SetActive(true);

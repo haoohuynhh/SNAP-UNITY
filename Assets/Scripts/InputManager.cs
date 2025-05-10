@@ -67,12 +67,10 @@ public class InputManager : MonoBehaviour
             settingMenu.SetActive(false);
             
         isPaused = false;
-        Cursor.visible = true;
     }
 
     public void OpenSettings()
     {
-        Cursor.visible = false;
         
         if (pauseMenu != null)
             pauseMenu.SetActive(false);
@@ -102,7 +100,6 @@ public class InputManager : MonoBehaviour
         if (settingMenu != null)
             settingMenu.SetActive(false);
             
-        Cursor.visible = true;
         isPaused = true;
     }
 
@@ -130,7 +127,6 @@ public class InputManager : MonoBehaviour
             pauseMenu.SetActive(true);
             
         Time.timeScale = 0f;
-        Cursor.visible = false;
         isPaused = true;
     }
 
