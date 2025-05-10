@@ -47,12 +47,15 @@ public class PlayerMovement : MonoBehaviour
     public float nextJumpTime = 0f;
     public float nextAttackTime = 0f;
 
+    InputManager inputManager;
+
     
      
 
     // Start is called before the first frame update
     void Start()
     {
+        inputManager = FindObjectOfType<InputManager>();
         currentHealth = maxHealth;
         Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Default"), LayerMask.NameToLayer("Enemy"), true);
         // Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Bullets"), LayerMask.NameToLayer("Enemy"), true);
@@ -94,6 +97,7 @@ public class PlayerMovement : MonoBehaviour
     }
     void OnFire(InputValue value)
     {
+        if(inputManager.isPaused) {return;}
         if(!isFree) {return;}
         if(isDeath) {return;}
         if(Time.time >= nextAttackTime){
@@ -131,6 +135,7 @@ public class PlayerMovement : MonoBehaviour
     }
     void OnGunReload(InputValue value)
     {
+        if(inputManager.isPaused) {return;}
         if(!isFree) {return;}
         weaponController.GunReload();
     }
@@ -142,6 +147,7 @@ public class PlayerMovement : MonoBehaviour
     
     void OnJump(InputValue value )
     {
+        if(inputManager.isPaused) {return;}
         if(!isFree) {return;}
         if(isDeath) {return;}
         if(!myBodyCollider.IsTouchingLayers(LayerMask.GetMask("Ground"))){return;}
@@ -158,6 +164,7 @@ public class PlayerMovement : MonoBehaviour
     }
     void OnRun()
     {
+        if(inputManager.isPaused) {return;}
         Vector2 playerVelocity = new Vector2 (moveInput.x * moveSpeed,myRigidbody.velocity.y);
         myRigidbody.velocity = playerVelocity;
         

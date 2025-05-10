@@ -24,9 +24,12 @@ public class WeaponController : MonoBehaviour
     public AudioClip shootSound;
     public AudioClip reloadSound;
     private AudioSource audioSource;
+
+    InputManager inputManager;
     
     void Start()
     {
+        inputManager = FindObjectOfType<InputManager>();
         // Lấy tham chiếu đến component PlayerMovement từ đối tượng cha
         playerMovement = GetComponentInParent<PlayerMovement>();
         audioSource = GetComponent<AudioSource>();
@@ -41,6 +44,10 @@ public class WeaponController : MonoBehaviour
     
     void WeaponAiming()
     {
+        if (inputManager.isPaused)
+        {
+            return; // Không thực hiện nếu game đang tạm dừng
+        }
         // Lấy vị trí chuột trong không gian màn hình
         Vector3 mousepos = Input.mousePosition;
         

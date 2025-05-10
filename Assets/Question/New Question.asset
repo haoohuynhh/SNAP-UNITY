@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   question: Kitty
   answers:
-  - Meo Con
-  - Heo Con
-  correctAnswerIndex: 0
+  - 'Heo Con '
+  - "M\xE8o Con"
+  correctAnswerIndex: 1

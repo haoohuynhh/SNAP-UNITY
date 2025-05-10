@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 460cfddf9265a794b981ba6b33e5ddc0, type: 3}
   m_Name: New Question 4
   m_EditorClassIdentifier: 
-  question: 6/2
+  question: variable
   answers:
-  - 4
-  - 3
+  - "H\u1EB1ng"
+  - "Bi\u1EBFn"
   correctAnswerIndex: 1

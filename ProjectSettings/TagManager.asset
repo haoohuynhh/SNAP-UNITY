@@ -18,7 +18,7 @@ TagManager:
   - Climbing
   - Bullets
   - Enemy
-  - 
+  - Hazard
   - 
   - 
   - 
@@ -53,6 +53,9 @@ TagManager:
   - name: Water
     uniqueID: 1573288733
     locked: 0
+  - name: Hazard
+    uniqueID: 252906461
+    locked: 0
   - name: Platform
     uniqueID: 1871416159
     locked: 0
@@ -64,4 +67,7 @@ TagManager:
     locked: 0
   - name: Player
     uniqueID: 1848074819
+    locked: 0
+  - name: Hazard
+    uniqueID: 2708464629
     locked: 0

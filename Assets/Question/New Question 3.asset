@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   question: Scorpion
   answers:
-  - Bo Cap
-  - Bo
+  - "B\u1ECD C\u1EA1p"
+  - "B\u1ECD Ng\u1EF1a"
   correctAnswerIndex: 0
