@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEditor;
 
 public class InputManager : MonoBehaviour
 {
@@ -20,12 +21,14 @@ public class InputManager : MonoBehaviour
 
     [Header("Death Menu")]
     
+    MenuController menuController;
     [SerializeField] GameObject deathMenu;
 
     // Không cần Awake, OnEnable, OnDisable nữa vì không sử dụng Input System
 
     void Start()
     {
+        
         isPaused = false;
 
         // Đảm bảo menu không hiển thị khi bắt đầu
@@ -149,4 +152,12 @@ public class InputManager : MonoBehaviour
         
         isPaused = true;
     }
+
+    public void OnFullscreenToggleChanged()
+    {
+        
+    }
+
+
+
 }

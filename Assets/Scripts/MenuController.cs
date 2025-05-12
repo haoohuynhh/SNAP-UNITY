@@ -14,12 +14,17 @@ public class MenuController : MonoBehaviour
     public Button startButton;
     public Button exitButton;
     public Button settingButton;
+    
 
 
     [Header("Settings Panel Buttons")]
-    public Slider sensitivitySlider;
+    public Toggle fullscreenToggle;
     public Slider volumeSlider;
     public Button applyButton;
+
+
+    public bool isFullscreen = true;
+    
 
     
 
@@ -38,11 +43,12 @@ public class MenuController : MonoBehaviour
         exitButton.onClick.AddListener(OnExitButtonClicked);
         settingButton.onClick.AddListener(OnSettingButtonClicked);
         applyButton.onClick.AddListener(OnApplyButtonClicked);
+        
 
         
     }
 
-    // Update is called once per frame
+    // Update is called once per frame   
     void Update()
     {
         
@@ -72,5 +78,13 @@ public class MenuController : MonoBehaviour
         settingPanel.SetActive(false);
         mainMenuPanel.SetActive(true);
     }
+    public void OnFullscreenToggleChanged()
+{
+   
+        isFullscreen = fullscreenToggle.isOn;
+        Screen.SetResolution(Screen.currentResolution.width, Screen.currentResolution.height, isFullscreen);
+        Debug.Log(isFullscreen );
+    
+}
     
 }
