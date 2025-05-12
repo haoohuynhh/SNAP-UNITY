@@ -18,6 +18,10 @@ public class InputManager : MonoBehaviour
     
     public bool isPaused = false;
 
+    [Header("Death Menu")]
+    
+    [SerializeField] GameObject deathMenu;
+
     // Không cần Awake, OnEnable, OnDisable nữa vì không sử dụng Input System
 
     void Start()
@@ -135,5 +139,14 @@ public class InputManager : MonoBehaviour
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         Debug.Log("Reset Game");
+    }
+
+    public void ShowDeathMenu()
+    {
+        if (deathMenu != null )
+            deathMenu.SetActive(true);
+            
+        
+        isPaused = true;
     }
 }

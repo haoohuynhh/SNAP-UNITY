@@ -20,10 +20,15 @@ public class MenuController : MonoBehaviour
     public Slider sensitivitySlider;
     public Slider volumeSlider;
     public Button applyButton;
+
     
+
+
+   
     // Start is called before the first frame update
     void Start()
     {
+
 
         startButton.gameObject.SetActive(true);
         exitButton.gameObject.SetActive(true);

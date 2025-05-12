@@ -16,7 +16,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] public Image[] hearts;
     [SerializeField] public Sprite fullHeart;
     [SerializeField] public Sprite emptyHeart;
-    bool isDeath = false;
+    public bool isDeath = false;
    
 
     [Header("Movement")]
@@ -46,8 +46,14 @@ public class PlayerMovement : MonoBehaviour
     public float jumpRate = 2f;
     public float nextJumpTime = 0f;
     public float nextAttackTime = 0f;
+    [Header("Audio")]
+    [SerializeField] public AudioClip hitsound;
+    [SerializeField] public AudioClip deathsound;
 
+    public AudioSource audioSource;
     InputManager inputManager;
+
+
 
     
      
@@ -55,6 +61,7 @@ public class PlayerMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        audioSource = GetComponent<AudioSource>();
         inputManager = FindObjectOfType<InputManager>();
         currentHealth = maxHealth;
         Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Default"), LayerMask.NameToLayer("Enemy"), true);
@@ -68,12 +75,14 @@ public class PlayerMovement : MonoBehaviour
         isFree = true;
         isDeath = false;
 
+        inputManager = FindObjectOfType<InputManager>();
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(inputManager.isPaused) {return;}
+        if(inputManager.isPaused || isDeath) {return;}
         
         
         UpdateUI();
@@ -82,6 +91,8 @@ public class PlayerMovement : MonoBehaviour
             DiedState();
             isDeath = true;
             GunSpriteRenderer.enabled = false;
+            audioSource.PlayOneShot(deathsound);
+            Invoke("ShowDeathMenuDelayed", 1.5f);
             return;
             
         }
@@ -96,6 +107,14 @@ public class PlayerMovement : MonoBehaviour
         
         // UpdateClimbAnimation();
     }
+    void ShowDeathMenuDelayed()
+{
+    if (inputManager != null)
+    {
+        
+        inputManager.ShowDeathMenu();
+    }
+}
     void OnFire(InputValue value)
     {
         if(inputManager.isPaused) {return;}

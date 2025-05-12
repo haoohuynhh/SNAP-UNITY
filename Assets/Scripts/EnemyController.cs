@@ -51,10 +51,17 @@ public class EnemyController : MonoBehaviour
     [SerializeField] Animator animator;
     [SerializeField] SpriteRenderer spriteRenderer;
     [SerializeField] Rigidbody2D rb2d;
+
+    [Header("SoundEffect")]
+    public AudioClip hurtSound;
+    public AudioClip dieSound;
+
+    private AudioSource audioSource;
     
     void Awake()
     {
         isAlive = true;
+        audioSource = GetComponent<AudioSource>();
         
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb2d = GetComponent<Rigidbody2D>();
@@ -67,6 +74,7 @@ public class EnemyController : MonoBehaviour
         rightBound = startPoint.x + patrolRange;
         SetupQuiz();
         animator = GetComponent<Animator>();
+        
 
         
 
@@ -123,7 +131,8 @@ public class EnemyController : MonoBehaviour
             int correctIndex = quiz.CurrentQuestion.GetCorrectAnswerIndex();
             if(selectedIndex == correctIndex)
             {
-                
+
+                    audioSource.PlayOneShot(dieSound);
                     Debug.Log("Trung diem yeu!");
                     isAlive = false;
                     animator.SetTrigger("Died");
@@ -133,10 +142,12 @@ public class EnemyController : MonoBehaviour
             }
             else
             {
+                audioSource.PlayOneShot(hurtSound);
                 currentHealth--;
                 Debug.Log("Trung Dan!");
                 if(currentHealth <= 0)
                 {
+                    audioSource.PlayOneShot(dieSound);
                     Debug.Log("Da chet!");
                     isAlive = false;
                     animator.SetTrigger("Died");
@@ -144,6 +155,7 @@ public class EnemyController : MonoBehaviour
                 }
                 else
                 {
+                    audioSource.PlayOneShot(hurtSound);
                     isAlive = true;
                     animator.SetTrigger("Hurt");
                 }
@@ -265,6 +277,7 @@ void AttackPlayer()
 }
 public void DamagePlayer(PlayerMovement playerMovement)
 {
+    playerMovement.audioSource.PlayOneShot(playerMovement.hitsound);
     playerMovement.currentHealth -= attackDamage;
     playerMovement.UpdateUI();
     
