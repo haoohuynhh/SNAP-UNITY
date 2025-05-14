@@ -60,6 +60,7 @@ public class EnemyController : MonoBehaviour
     
     void Awake()
     {
+        
         isAlive = true;
         audioSource = GetComponent<AudioSource>();
         
@@ -108,10 +109,16 @@ public class EnemyController : MonoBehaviour
         // isReturningToPatrol = false;
         followPlayer();
     }
+    if (playerMovement.isDeath)
+    {
+        ReturnToPatrol();
+    }
+    
     else
     {
         Patrol();
-    }    }
+    }  
+      }
     
        
     void SetupQuiz()
@@ -133,6 +140,7 @@ public class EnemyController : MonoBehaviour
             {
 
                     audioSource.PlayOneShot(dieSound);
+                    DisableComponents();
                     Debug.Log("Trung diem yeu!");
                     isAlive = false;
                     animator.SetTrigger("Died");
@@ -148,6 +156,7 @@ public class EnemyController : MonoBehaviour
                 if(currentHealth <= 0)
                 {
                     audioSource.PlayOneShot(dieSound);
+                    DisableComponents();
                     Debug.Log("Da chet!");
                     isAlive = false;
                     animator.SetTrigger("Died");
@@ -161,6 +170,15 @@ public class EnemyController : MonoBehaviour
                 }
             }
         }
+    }
+    public void DisableComponents()
+    {
+        Collider2D[] colliders = GetComponents<Collider2D>();
+            foreach (Collider2D col in colliders)
+            {
+                col.enabled = false;
+                rb2d.isKinematic = true;
+            }
     }
    void Patrol()
 {
@@ -280,6 +298,7 @@ public void DamagePlayer(PlayerMovement playerMovement)
     playerMovement.audioSource.PlayOneShot(playerMovement.hitsound);
     playerMovement.currentHealth -= attackDamage;
     playerMovement.UpdateUI();
+    
     
 
 }

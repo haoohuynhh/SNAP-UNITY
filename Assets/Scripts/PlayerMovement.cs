@@ -107,6 +107,19 @@ public class PlayerMovement : MonoBehaviour
         
         // UpdateClimbAnimation();
     }
+    public IEnumerator Blink()
+    {
+        var transparent = new Color(1, 1, 1, 0.3f);
+        var normal = new Color(1, 1, 1, 1f);
+
+        for (int i = 0; i < 5; i++)
+        {
+            spriteRenderer.color = transparent;
+            yield return new WaitForSeconds(0.1f);
+            spriteRenderer.color = normal;
+            yield return new WaitForSeconds(0.1f);
+        }
+    }
     void ShowDeathMenuDelayed()
 {
     if (inputManager != null)
@@ -304,8 +317,13 @@ public class PlayerMovement : MonoBehaviour
             myAnimator.SetBool("ClimbRelaxing",true);
             myAnimator.SetBool("isClimbing",false);
             isFree = false;
+            Invoke("DisbaleGunsprite",0.15f);
         }
         
+    }
+    public void DisbaleGunsprite()
+    {
+        GunSpriteRenderer.enabled = false;
     }
     void OnTriggerEnter2D(Collider2D other)
     {
@@ -321,8 +339,7 @@ void RunReverse()
     Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
     // Hướng nhân vật đang nhìn (dựa trên localScale.x)
-    float playerDirection = transform.localScale.x; // 1 = facing right, -1 = facing left
-
+    float playerDirection = transform.eulerAngles.y < 90 ? 1 : -1; // 1 = facing right, -1 = facing left
     // Hướng chuột so với nhân vật
     float mouseDirection = Mathf.Sign(mousePos.x - transform.position.x); // 1 = chuột ở bên phải, -1 = bên trái
 
