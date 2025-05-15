@@ -86,7 +86,7 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: bc35f4d1e135f9b4494e93d2840e3da4, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -229,7 +229,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 5
   currentHealth: 0
-  quiz: {fileID: 0}
+  quiz: {fileID: 1716630527285745382}
   moveSpeed: 2
   patrolRange: 3
   leftBound: 0
@@ -483,6 +483,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0bd10707d04f1fa48b34d3a3f2e864cf, type: 3}
+--- !u!114 &1716630527285745382 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8658884655307741150, guid: 0bd10707d04f1fa48b34d3a3f2e864cf, type: 3}
+  m_PrefabInstance: {fileID: 8068264604545286456}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd80f8b2703e2a745bb72e94deeedd90, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &3055602080498827648 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5016893497539838136, guid: 0bd10707d04f1fa48b34d3a3f2e864cf, type: 3}

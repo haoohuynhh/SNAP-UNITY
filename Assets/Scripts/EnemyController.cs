@@ -37,15 +37,14 @@ public class EnemyController : MonoBehaviour
     public float StopFollowDistance = 2f;
     public float attackCooldown = 1f;
     public float attackTimer = 0f;
+    [SerializeField] float attackDelay = 0.5f;
     
+
     [SerializeField] PlayerMovement playerMovement;
     [SerializeField] Transform attackPoint;
     [SerializeField] float attackRange = 0.5f;
     [SerializeField] LayerMask playerLayer;
-    // [SerializeField] float attackRate = 1f;
     [SerializeField] int attackDamage = 1;
-
-
 
     [Header("Components")]
     [SerializeField] Animator animator;
@@ -55,15 +54,12 @@ public class EnemyController : MonoBehaviour
     [Header("SoundEffect")]
     public AudioClip hurtSound;
     public AudioClip dieSound;
-
     private AudioSource audioSource;
-    
+
     void Awake()
     {
-        
         isAlive = true;
         audioSource = GetComponent<AudioSource>();
-        
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb2d = GetComponent<Rigidbody2D>();
         player = GameObject.FindGameObjectWithTag("Player").transform;
@@ -75,270 +71,245 @@ public class EnemyController : MonoBehaviour
         rightBound = startPoint.x + patrolRange;
         SetupQuiz();
         animator = GetComponent<Animator>();
-        
-
-        
-
-        
     }
 
-    // Update is called once per frame
     void FixedUpdate()
     {
-        
-    if (!isAlive)
-    {
-        rb2d.velocity = Vector2.zero; // Dừng lại ngay lập tức
-       
-        return;
-     
+        if (!isAlive)
+        {
+            rb2d.velocity = Vector2.zero;
+            animator.SetBool("IsWalking", false);
+            return;
+        }
+
+        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+
+        if (playerMovement.isDeath)
+        {
+            if (!isReturningToPatrol)
+            {
+                isReturningToPatrol = true;
+                Debug.Log("Player dead → Return to patrol");
+            }
+        }
+
+        if (isReturningToPatrol)
+        {
+            ReturnToPatrol();
+        }
+        else if (distanceToPlayer <= attackDistance)
+        {
+            AttackPlayer();
+        }
+        else if (distanceToPlayer <= followDistance)
+        {
+            followPlayer();
+        }
+        else
+        {
+            Patrol();
+        }
     }
 
-    float distanceToPlayer = Vector2.Distance(transform.position, player.position);
-
-    if (isReturningToPatrol)
-    {
-        ReturnToPatrol();
-    }
-    else if (distanceToPlayer <= attackDistance)
-    {
-        AttackPlayer();
-    }
-    else if (distanceToPlayer <= followDistance)
-    {
-        // isReturningToPatrol = false;
-        followPlayer();
-    }
-    if (playerMovement.isDeath)
-    {
-        ReturnToPatrol();
-    }
-    
-    else
-    {
-        Patrol();
-    }  
-      }
-    
-       
     void SetupQuiz()
     {
-        if(quiz != null)
+        if (quiz != null)
         {
             quiz.gameObject.SetActive(true);
         }
     }
+
     public void DamageTake()
     {
         if (!isAlive) return;
-        
-        if(quiz != null)
+
+        if (quiz != null)
         {
             int selectedIndex = quiz.CurrentSelectedIndex;
             int correctIndex = quiz.CurrentQuestion.GetCorrectAnswerIndex();
-            if(selectedIndex == correctIndex)
-            {
 
-                    audioSource.PlayOneShot(dieSound);
-                    DisableComponents();
-                    Debug.Log("Trung diem yeu!");
-                    isAlive = false;
-                    animator.SetTrigger("Died");
-                    
-                    Destroy(gameObject,2f);
-                
+            if (selectedIndex == correctIndex)
+            {
+                audioSource.PlayOneShot(dieSound);
+                DisableComponents();
+                Debug.Log("Trúng điểm yếu!");
+                isAlive = false;
+                animator.SetTrigger("Died");
+                Destroy(gameObject, 2f);
             }
             else
             {
                 audioSource.PlayOneShot(hurtSound);
                 currentHealth--;
-                Debug.Log("Trung Dan!");
-                if(currentHealth <= 0)
+                Debug.Log("Trúng đạn!");
+                if (currentHealth <= 0)
                 {
                     audioSource.PlayOneShot(dieSound);
                     DisableComponents();
-                    Debug.Log("Da chet!");
+                    Debug.Log("Đã chết!");
                     isAlive = false;
                     animator.SetTrigger("Died");
-                    Destroy(gameObject,2f);
+                    Destroy(gameObject, 2f);
                 }
                 else
                 {
-                    audioSource.PlayOneShot(hurtSound);
-                    isAlive = true;
                     animator.SetTrigger("Hurt");
                 }
             }
         }
     }
+
     public void DisableComponents()
     {
         Collider2D[] colliders = GetComponents<Collider2D>();
-            foreach (Collider2D col in colliders)
-            {
-                col.enabled = false;
-                rb2d.isKinematic = true;
-            }
-    }
-   void Patrol()
-{
-    if(!isAlive)
+        foreach (Collider2D col in colliders)
         {
-            rb2d.velocity = Vector2.zero; // Dừng lại ngay lập tức
+            col.enabled = false;
+        }
+        rb2d.isKinematic = true;
+    }
+
+    void Patrol()
+    {
+        if (!isAlive)
+        {
+            rb2d.velocity = Vector2.zero;
+            animator.SetBool("IsWalking", false);
             return;
         }
-    // Kiểm tra nếu đang trong thời gian chờ
-    if(waitTimer > 0)
-    {
-        
-        // Đang trong thời gian chờ - dừng di chuyển
-        waitTimer -= Time.deltaTime;
-        rb2d.velocity = Vector2.zero;
-        animator.SetBool("IsWalking", false);
-        
-        // Nếu thời gian chờ kết thúc, thực hiện quay đầu
-        if(waitTimer <= 0)
+
+        if (waitTimer > 0)
         {
-            // Sau khi kết thúc thời gian chờ, đổi hướng
-            movingRight = !movingRight;
-            transform.rotation = movingRight ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
+            waitTimer -= Time.deltaTime;
+            rb2d.velocity = Vector2.zero;
+            animator.SetBool("IsWalking", false);
+
+            if (waitTimer <= 0)
+            {
+                movingRight = !movingRight;
+                transform.rotation = movingRight ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
+                animator.SetBool("IsWalking", true);
+            }
+            return;
+        }
+
+        float direction = movingRight ? 1 : -1;
+        rb2d.velocity = new Vector2(direction * moveSpeed, rb2d.velocity.y);
+        animator.SetBool("IsWalking", true);
+
+        if ((transform.position.x > rightBound && movingRight) ||
+            (transform.position.x < leftBound && !movingRight))
+        {
+            waitTimer = waitTimeAtEdge;
+            rb2d.velocity = Vector2.zero;
+            animator.SetBool("IsWalking", false);
+        }
+    }
+
+    void followPlayer()
+    {
+        if (!isAlive)
+        {
+            rb2d.velocity = Vector2.zero;
+            animator.SetBool("IsWalking", false);
+            return;
+        }
+
+        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+        if (distanceToPlayer > followDistance)
+        {
+            isReturningToPatrol = true;
+            Debug.Log("Return to patrol!");
+            return;
+        }
+
+        Vector2 direction = (player.position - transform.position).normalized;
+        rb2d.velocity = new Vector2(direction.x * followSpeed, rb2d.velocity.y);
+        animator.SetBool("IsWalking", true);
+        transform.rotation = direction.x > 0 ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
+    }
+
+    void ReturnToPatrol()
+    {
+        if (!isAlive)
+        {
+            rb2d.velocity = Vector2.zero;
+            animator.SetBool("IsWalking", false);
+            return;
+        }
+
+        float distanceToStart = Vector2.Distance(transform.position, startPoint);
+
+        if (distanceToStart > 0.1f)
+        {
+            Vector2 dir = (startPoint - (Vector2)transform.position).normalized;
+            rb2d.velocity = new Vector2(dir.x * moveSpeed, rb2d.velocity.y);
+            transform.rotation = dir.x > 0 ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
             animator.SetBool("IsWalking", true);
         }
-        return;
+        else
+        {
+            isReturningToPatrol = false;
+            transform.position = new Vector3(startPoint.x, transform.position.y, transform.position.z);
+            movingRight = true;
+            waitTimer = waitTimeAtEdge;
+            rb2d.velocity = Vector2.zero;
+            animator.SetBool("IsWalking", false);
+        }
     }
-    
-    // Thực hiện di chuyển bình thường
-    float direction = movingRight ? 1 : -1;
-    rb2d.velocity = new Vector2(direction * moveSpeed, rb2d.velocity.y);
-    animator.SetBool("IsWalking", true);
-    
-    // Kiểm tra nếu đến biên
-    if((transform.position.x > rightBound && movingRight) || 
-       (transform.position.x < leftBound && !movingRight))
+
+    void AttackPlayer()
     {
-        // Đến biên - bắt đầu thời gian chờ
-        waitTimer = waitTimeAtEdge;
-        rb2d.velocity = Vector2.zero; // Dừng lại ngay lập tức
-        animator.SetBool("IsWalking", false);
-        
+        if (!isAlive || playerMovement.isDeath)
+            return;
+
+        if (Time.time - attackTimer >= attackCooldown)
+        {
+            attackTimer = Time.time;
+            animator.SetTrigger("Attack");
+            Debug.Log("Attack Player!");
+
+            StartCoroutine(PerformAttackDamage(attackDelay));
+        }
     }
-}
-    
-   void followPlayer()
+
+    public void DamagePlayer(PlayerMovement playerMovement)
+    {
+        playerMovement.audioSource.PlayOneShot(playerMovement.hitsound);
+        playerMovement.currentHealth -= attackDamage;
+        playerMovement.UpdateUI();
+        StartCoroutine(playerMovement.Blink());
+    }
+
+    private IEnumerator PerformAttackDamage(float delay)
 {
-    if (!isAlive)
-    {
-    rb2d.velocity = Vector2.zero;
-    return;
-    }
-
-    float distanceToPlayer = Vector2.Distance(transform.position, player.position);
-
-    // Nếu player rời khỏi vùng follow → quay về patrol
-    if (distanceToPlayer > followDistance)
-    {
-        isReturningToPatrol = true;
-        Debug.Log("Return to patrol!");
-        return;
-    }
-
-    // Theo dõi player
-    Vector2 direction = (player.position - transform.position).normalized;
-    rb2d.velocity = new Vector2(direction.x * followSpeed, rb2d.velocity.y); 
-    Debug.Log("Follow Player!");
-    animator.SetBool("IsWalking", true);
-    transform.rotation = direction.x > 0 ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
-}
-void ReturnToPatrol()
-{
-    if (!isAlive)
-    {
-    rb2d.velocity = Vector2.zero;
-    return;
-    }
-    float distanceToStart = Vector2.Distance(transform.position, startPoint);
-
-    if (distanceToStart > 0.1f)
-    {
-        Vector2 dir = (startPoint - (Vector2)transform.position).normalized;
-        rb2d.velocity = new Vector2(dir.x * moveSpeed, rb2d.velocity.y);
-        transform.rotation = dir.x > 0 ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
-        animator.SetBool("IsWalking", true);
-    }
-    else
-    {
-        // Khi đã về gần vị trí ban đầu → reset patrol
-        isReturningToPatrol = false;
-        transform.position = new Vector3(startPoint.x, transform.position.y, transform.position.z); // đảm bảo khớp chính xác
-        movingRight = true;
-        waitTimer = waitTimeAtEdge;
-        rb2d.velocity = Vector2.zero;
-    }
-}
-    
-
-
-
-void AttackPlayer()
-{
-    if (!isAlive) return;
-    // Kiểm tra cooldown tấn công
-    if (Time.time - attackTimer >= attackCooldown)
-    {
-        attackTimer = Time.time;
-        animator.SetTrigger("Attack");
-        Debug.Log("Attack Player!");
-        
-        // Gọi coroutine thực hiện sát thương sau một khoảng thời gian delay
-        StartCoroutine(PerformAttackDamage(0.5f));
-    }
-}
-public void DamagePlayer(PlayerMovement playerMovement)
-{
-    playerMovement.audioSource.PlayOneShot(playerMovement.hitsound);
-    playerMovement.currentHealth -= attackDamage;
-    playerMovement.UpdateUI();
-    
-    
-
-}
-private IEnumerator PerformAttackDamage(float delay)
-{
-    // Đợi cho animation bắt đầu
     yield return new WaitForSeconds(delay);
-    
-    // Tìm tất cả player nằm trong vùng attack (OverlapCircle)
+
+    if (!isAlive || playerMovement.isDeath) yield break;
+
     Collider2D[] hitPlayers = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, playerLayer);
-    
-    // Lặp qua tất cả player bị trúng và gây sát thương
+
     foreach (Collider2D player in hitPlayers)
     {
         Debug.Log("Enemy hit " + player.name);
-        
-        // Lấy component PlayerHealth hoặc PlayerMovement
         PlayerMovement playerMovement = player.GetComponent<PlayerMovement>();
-        
         if (playerMovement != null)
         {
-            // Gây sát thương cho player
             DamagePlayer(playerMovement);
-            
         }
     }
 }
-   
+
     void OnDrawGizmosSelected()
-{
-    // Phạm vi tuần tra
-    Gizmos.color = Color.green;
-    Gizmos.DrawLine(transform.position + Vector3.left * patrolRange,
-                    transform.position + Vector3.right * patrolRange);
-    
-    // Phạm vi tấn công
-    if (attackPoint != null)
     {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(attackPoint.position, attackRange);
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(transform.position + Vector3.left * patrolRange,
+                        transform.position + Vector3.right * patrolRange);
+
+        if (attackPoint != null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(attackPoint.position, attackRange);
+        }
     }
-}
 }

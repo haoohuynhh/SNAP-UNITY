@@ -240,8 +240,11 @@ public class PlayerMovement : MonoBehaviour
         
        
         
+            myRigidbody.isKinematic = true;
             
             myAnimator.SetTrigger("Died");
+            myRigidbody.velocity = Vector2.zero;
+            
             GunSpriteRenderer.enabled = false;
             
             

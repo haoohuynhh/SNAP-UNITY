@@ -109,7 +109,7 @@ public class SlowMotionManager : MonoBehaviour
         isInSlowMotion = true;
         
         // Hiệu ứng âm thanh khi bắt đầu slow motion
-        if (slowMotionSound != null)
+        if (slowMotionSound != null)        
         {
             slowMotionSound.pitch = 1f; // Giữ pitch không đổi
             slowMotionSound.Play();
