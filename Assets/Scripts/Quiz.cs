@@ -54,13 +54,18 @@ public class Quiz : MonoBehaviour
    public  void HighlightButton(int index)
     {
             Color highlightColor = new Color(0f, 1f, 239f/255f); // 00FFEF
-
+            Color texthighlightColor = new Color32(0xC6, 0xF8, 0x31, 0xFF);
         for (int i = 0; i < answerButtons.Length; i++)
         {
             var bg = answerButtons[i].GetComponent<UnityEngine.UI.Image>();
+            var text = answerButtons[i].GetComponentInChildren<TextMeshProUGUI>();
             if (bg != null)
             {
                 bg.color = (i == index) ? highlightColor : Color.white;
+            }
+            if (text != null)
+            {
+                text.color = (i == index) ? texthighlightColor : Color.white;
             }
         }
     }

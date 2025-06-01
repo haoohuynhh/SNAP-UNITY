@@ -98,7 +98,7 @@ public class MenuController : MonoBehaviour
     
     public void OnStartButtonClicked()
     {
-        SceneManager.LoadScene("Level 0");
+        SceneManager.LoadScene("Level 1");
         Debug.Log("Start button clicked!");
     }
     

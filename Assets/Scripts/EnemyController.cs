@@ -29,7 +29,7 @@ public class EnemyController : MonoBehaviour
     [Header("Follow Player")]
     public Transform player;
     public float followDistance = 5f;
-    public float followSpeed = 5f;
+    public float followSpeed = 8f;
     private bool isReturningToPatrol = false;
 
     [Header("Attack")]
@@ -134,6 +134,8 @@ public class EnemyController : MonoBehaviour
                 DisableComponents();
                 Debug.Log("Trúng điểm yếu!");
                 isAlive = false;
+                DisableComponents();
+                currentHealth = 0;
                 animator.SetTrigger("Died");
                 Destroy(gameObject, 2f);
             }
@@ -148,6 +150,8 @@ public class EnemyController : MonoBehaviour
                     DisableComponents();
                     Debug.Log("Đã chết!");
                     isAlive = false;
+                    currentHealth = 0;
+                    DisableComponents();
                     animator.SetTrigger("Died");
                     Destroy(gameObject, 2f);
                 }
@@ -161,12 +165,18 @@ public class EnemyController : MonoBehaviour
 
     public void DisableComponents()
     {
+        animator.ResetTrigger("Hurt");
+        animator.ResetTrigger("Attack");
         Collider2D[] colliders = GetComponents<Collider2D>();
         foreach (Collider2D col in colliders)
         {
             col.enabled = false;
         }
+        
+        StopAllCoroutines();
+        attackPoint.gameObject.SetActive(false);
         rb2d.isKinematic = true;
+        quiz.gameObject.SetActive(false);
     }
 
     void Patrol()
@@ -212,6 +222,7 @@ public class EnemyController : MonoBehaviour
         {
             rb2d.velocity = Vector2.zero;
             animator.SetBool("IsWalking", false);
+        
             return;
         }
 
@@ -261,15 +272,21 @@ public class EnemyController : MonoBehaviour
     void AttackPlayer()
     {
         if (!isAlive || playerMovement.isDeath)
+        {
+            DisableComponents();
             return;
-
+        }
         if (Time.time - attackTimer >= attackCooldown)
         {
             attackTimer = Time.time;
-            animator.SetTrigger("Attack");
-            Debug.Log("Attack Player!");
 
-            StartCoroutine(PerformAttackDamage(attackDelay));
+            if (isAlive)
+            {
+                animator.SetTrigger("Attack");
+                Debug.Log("Attack Player!");
+
+                StartCoroutine(PerformAttackDamage(attackDelay));
+            }
         }
     }
 
@@ -278,7 +295,11 @@ public class EnemyController : MonoBehaviour
         playerMovement.audioSource.PlayOneShot(playerMovement.hitsound);
         playerMovement.currentHealth -= attackDamage;
         playerMovement.UpdateUI();
-        StartCoroutine(playerMovement.Blink());
+        if (playerMovement.blinkCoroutine != null)
+        {
+            playerMovement.StopCoroutine(playerMovement.blinkCoroutine);
+        }
+            playerMovement.blinkCoroutine = playerMovement.StartCoroutine(playerMovement.Blink());
     }
 
     private IEnumerator PerformAttackDamage(float delay)

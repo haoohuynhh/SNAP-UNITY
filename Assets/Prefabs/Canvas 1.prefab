@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8614450385221409435}
   - component: {fileID: 8658884655307741150}
   - component: {fileID: 147347277681724577}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Canvas 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -61,7 +61,7 @@ Canvas:
   m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
-  m_SortingLayerID: -578605779
+  m_SortingLayerID: -995627663
   m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!114 &5303955344538744643
@@ -123,10 +123,16 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a7984dac4a2a1e04ea3731fe924d7767, type: 2}
   - {fileID: 11400000, guid: b657ff2100cf01d46a9c43572edfe25a, type: 2}
   - {fileID: 11400000, guid: f14676564d1927b45964d79ca60bab33, type: 2}
+  - {fileID: 11400000, guid: d905cf4a56cfe6345aec1d6fcc0a7454, type: 2}
+  - {fileID: 11400000, guid: 0e2229816c8688f48b4c7c4839f3e46f, type: 2}
+  - {fileID: 11400000, guid: aa01df4e83ba0404087d99734515d710, type: 2}
+  - {fileID: 11400000, guid: 4e1bed42091d64e4a923e0c5bd01c26a, type: 2}
+  - {fileID: 11400000, guid: 56c61abc3429c274d920a2268e120716, type: 2}
+  - {fileID: 11400000, guid: 70638b2d71f4089498fd19bd1f7bd2fa, type: 2}
   answerButtons:
   - {fileID: 3472782645817194717}
   - {fileID: 2044289509607582931}
-  switchInterval: 0.5
+  switchInterval: 2
   currentQuestion: {fileID: 0}
 --- !u!114 &147347277681724577
 MonoBehaviour:
@@ -151,7 +157,7 @@ GameObject:
   - component: {fileID: 12673026993237489}
   - component: {fileID: 6802784063971717303}
   - component: {fileID: 2940159803152559502}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -229,7 +235,7 @@ GameObject:
   - component: {fileID: 3689376657305615583}
   - component: {fileID: 2112273495008484088}
   - component: {fileID: 4866742305614057405}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Text (TMP) (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -364,7 +370,7 @@ GameObject:
   - component: {fileID: 4857065699826056718}
   - component: {fileID: 67064338817276404}
   - component: {fileID: 5893606707193624042}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Button (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -485,7 +491,7 @@ GameObject:
   - component: {fileID: 1089715342716004026}
   - component: {fileID: 4595724357993294147}
   - component: {fileID: 2825371859171596886}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -605,7 +611,7 @@ GameObject:
   - component: {fileID: 3444070495174501928}
   - component: {fileID: 1361934280619060306}
   - component: {fileID: 6511439527435361349}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Text (TMP) (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -739,7 +745,7 @@ GameObject:
   - component: {fileID: 3896586915328022646}
   - component: {fileID: 718285042819486578}
   - component: {fileID: 8443333472685295028}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

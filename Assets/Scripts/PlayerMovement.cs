@@ -1,3 +1,4 @@
+
 using System.Collections;
 using System.Collections.Generic;
 // using Microsoft.Unity.VisualStudio.Editor;
@@ -17,12 +18,15 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] public Sprite fullHeart;
     [SerializeField] public Sprite emptyHeart;
     public bool isDeath = false;
+    public Coroutine blinkCoroutine;
+
    
 
     [Header("Movement")]
     Vector2 moveInput;
     [SerializeField] float moveSpeed = 10f;
-    [SerializeField] float jumpSpeed = 20f;
+    [SerializeField] float jumpSpeed;
+    [SerializeField] float jumpForce = 27f;
     [SerializeField] float climbSpeed = 5f;
     
     [SerializeField] GameObject bullet;
@@ -78,6 +82,13 @@ public class PlayerMovement : MonoBehaviour
         inputManager = FindObjectOfType<InputManager>();
 
     }
+    void FixedUpdate()
+{
+    if(myRigidbody.velocity.y > jumpForce)
+    {
+        myRigidbody.velocity = new Vector2(myRigidbody.velocity.x, jumpForce);
+    }
+}
 
     // Update is called once per frame
     void Update()
@@ -119,6 +130,9 @@ public class PlayerMovement : MonoBehaviour
             spriteRenderer.color = normal;
             yield return new WaitForSeconds(0.1f);
         }
+            spriteRenderer.color = normal; // Đặt lại màu về bình thường sau khi kết thúc
+            blinkCoroutine = null; // Đặt lại coroutine để có thể gọi lại sau này
+        
     }
     void ShowDeathMenuDelayed()
 {
@@ -351,7 +365,7 @@ void RunReverse()
 
     // Kiểm tra xem nhân vật có đang di chuyển không (dùng vận tốc thực tế)
     bool isMoving = Mathf.Abs(myRigidbody.velocity.x) > Mathf.Epsilon;
-    bool isRunningBackwards = isMoving &&                       // Đang di chuyển
+    bool isRunningBackwards = isMoving &&                        // Đang di chuyển
                               mouseDirection == playerDirection && // Chuột và nhân vật nhìn cùng hướng
                               moveDirection != playerDirection && myBodyCollider.IsTouchingLayers(LayerMask.GetMask("Ground"));   // Di chuyển ngược với hướng nhìn
 
@@ -359,6 +373,7 @@ void RunReverse()
     {
         myAnimator.SetBool("IsRunningBack",false);
         myAnimator.SetBool("IsrunningGun",false);
+
         return;
         
         

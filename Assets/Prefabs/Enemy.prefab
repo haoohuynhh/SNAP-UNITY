@@ -96,7 +96,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 1
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!61 &1481068383232397658
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -237,11 +237,12 @@ MonoBehaviour:
   waitTimeAtEdge: 1
   player: {fileID: 0}
   followDistance: 5
-  followSpeed: 5
+  followSpeed: 7.4
   attackDistance: 1.5
   StopFollowDistance: 1.06
   attackCooldown: 1
   attackTimer: 0
+  attackDelay: 0.5
   playerMovement: {fileID: 0}
   attackPoint: {fileID: 4858804191697673539}
   attackRange: 0.5
@@ -362,30 +363,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Canvas 1
       objectReference: {fileID: 0}
-    - target: {fileID: 889243752089547055, guid: 0bd10707d04f1fa48b34d3a3f2e864cf, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 921931184851014919, guid: 0bd10707d04f1fa48b34d3a3f2e864cf, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 998586638234408776, guid: 0bd10707d04f1fa48b34d3a3f2e864cf, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 1829908111550163121, guid: 0bd10707d04f1fa48b34d3a3f2e864cf, type: 3}
-      propertyPath: m_SortingLayerID
-      value: -995627663
-      objectReference: {fileID: 0}
-    - target: {fileID: 2044289509607582931, guid: 0bd10707d04f1fa48b34d3a3f2e864cf, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 3472782645817194717, guid: 0bd10707d04f1fa48b34d3a3f2e864cf, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
     - target: {fileID: 5016893497539838136, guid: 0bd10707d04f1fa48b34d3a3f2e864cf, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -465,18 +442,6 @@ PrefabInstance:
     - target: {fileID: 5016893497539838136, guid: 0bd10707d04f1fa48b34d3a3f2e864cf, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7362055865049981061, guid: 0bd10707d04f1fa48b34d3a3f2e864cf, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 8466222491222960943, guid: 0bd10707d04f1fa48b34d3a3f2e864cf, type: 3}
-      propertyPath: m_Layer
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 8658884655307741150, guid: 0bd10707d04f1fa48b34d3a3f2e864cf, type: 3}
-      propertyPath: switchInterval
-      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
